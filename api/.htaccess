@@ -1,0 +1,9 @@
+# Block direct access to test/debug API scripts in production
+<FilesMatch "^(test_.*|debug_.*)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Block migration/bootstrap endpoints from direct web access
+<FilesMatch "^(ensure_.*|migrate_.*)\.php$">
+    Require all denied
+</FilesMatch>

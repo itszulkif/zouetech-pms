@@ -1,0 +1,19 @@
+# Disable debug/development behaviour: block direct access to debug, test, and verification scripts
+<FilesMatch "^(debug_.*|test_.*|verify_settings)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Block one-time bootstrap/setup scripts from public web access
+<FilesMatch "^(setup_db|create_admin|setup_vapid_keys)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Block access to .log files and config with secrets
+<FilesMatch "\.(log|local\.php)$">
+    Require all denied
+</FilesMatch>
+
+# Deny access to the logs directory (extra safeguard)
+<IfModule mod_rewrite.c>
+    RewriteRule ^logs/ - [F,L]
+</IfModule>

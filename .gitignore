@@ -1,0 +1,30 @@
+# Secrets & local config
+pwa_config.local.php
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/*.log
+debug-*.log
+
+# Composer
+vendor/
+
+# Node (if any)
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Production marker (optional: create on server)
+# .production

@@ -1,0 +1,26 @@
+{
+  "name": "Zouetech-PMS",
+  "short_name": "Zouetech-PMS",
+  "description": "Project Management System - Tasks, Projects & Team Collaboration",
+  "start_url": "./login.php",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050505",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "pwa-icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"]
+}

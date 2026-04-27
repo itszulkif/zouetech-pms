@@ -1,0 +1,12 @@
+{
+    "name": "zoutech/pms",
+    "authors": [
+        {
+            "name": "Muhammad Zulkif",
+            "email": "muhammadzulkif2001@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.7"
+    }
+}
