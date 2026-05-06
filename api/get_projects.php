@@ -52,6 +52,13 @@ $sql = "SELECT
             p.end_date, 
             p.kpi_target,
             p.created_at,
+            (
+                SELECT GROUP_CONCAT(mpm.user_id ORDER BY mpm.user_id SEPARATOR ',')
+                FROM major_project_members mpm
+                JOIN users mu ON mu.id = mpm.user_id
+                WHERE mpm.major_project_id = p.id
+                  AND mu.role IN ('Team Member', 'Team Lead')
+            ) AS team_member_ids,
             (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id) as task_count
         FROM projects p 
         LEFT JOIN departments d ON p.department_id = d.id

@@ -42,7 +42,7 @@ $sql_project_tasks = "
     JOIN projects p ON p.id = t.project_id
     LEFT JOIN users u ON u.id = t.assigned_to
     WHERE p.department_id = ? AND t.project_id IS NOT NULL AND t.project_id > 0
-    ORDER BY t.created_at DESC
+    ORDER BY t.created_at ASC, t.id ASC
 ";
 $stmt = $db->prepare($sql_project_tasks);
 $stmt->bind_param("i", $department_id);
@@ -85,7 +85,7 @@ $sql_direct_tasks = "
           )
       )
     GROUP BY t.id
-    ORDER BY t.created_at DESC
+    ORDER BY t.created_at ASC, t.id ASC
 ";
 $stmt = $db->prepare($sql_direct_tasks);
 $stmt->bind_param("ii", $department_id, $department_id);

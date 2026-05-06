@@ -1,5 +1,5 @@
 <?php
-// api/get_workload_overview.php - Workload for all Team Members and Department Heads (for Performance Overview page)
+// api/get_workload_overview.php - Workload for Team Members, Team Leads, and Department Heads (for Performance Overview page)
 require_once '../includes/auth_middleware.php';
 require_once '../db_connect.php';
 header('Content-Type: application/json');
@@ -33,7 +33,7 @@ if ($user_role === 'Department Head' && $dept_id > 0) {
     $dept_filter = " AND u.department_id = $filter_dept";
 }
 
-// All Team Members and Department Heads (with department filter for Dept Head)
+// All Team Members, Team Leads, and Department Heads (with department filter for Dept Head)
 $users = [];
 $stmt = $db->prepare("
     SELECT
@@ -59,7 +59,7 @@ $stmt = $db->prepare("
         WHERE t.status IN ('Completed', 'Missed')
         GROUP BY user_id
     ) pl ON pl.user_id = u.id
-    WHERE u.role IN ('Department Head', 'Team Member') $dept_filter
+    WHERE u.role IN ('Department Head', 'Team Lead', 'Team Member') $dept_filter
     ORDER BY d.name ASC, u.role ASC, u.full_name ASC
 ");
 $stmt->execute();

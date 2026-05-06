@@ -104,7 +104,7 @@ $is_super_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'Super Admi
             </div>
 
             <div id="workloadLoading" class="text-center py-12 text-gray-500 font-mono text-sm">Loading workload...</div>
-            <div id="workloadEmpty" class="hidden text-center py-12 text-gray-500 font-mono text-sm">No team members or department heads found.</div>
+            <div id="workloadEmpty" class="hidden text-center py-12 text-gray-500 font-mono text-sm">No team members, team leads, or department heads found.</div>
 
             <!-- Card View -->
             <div id="workloadGrid" class="hidden grid workload-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5"></div>
@@ -221,7 +221,7 @@ $is_super_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'Super Admi
         loading.classList.add('hidden');
         if (res.status !== 'success' || !res.data || res.data.length === 0) {
             empty.classList.remove('hidden');
-            empty.textContent = 'No team members or department heads found.';
+            empty.textContent = 'No team members, team leads, or department heads found.';
             return;
         }
         rawData = res.data;

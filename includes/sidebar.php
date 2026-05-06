@@ -91,6 +91,14 @@ endif; ?>
                         <span class="font-medium">Calendar</span>
                     </a>
                 </li>
+                <?php if (in_array($_SESSION['role'], ['Super Admin'])): ?>
+                <li>
+                    <a href="day_todo_calendar.php" class="flex items-center px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800/70 rounded-lg transition-all group <?php echo basename($_SERVER['PHP_SELF']) == 'day_todo_calendar.php' ? 'bg-blue-500/12 border-l-4 border-blue-400 text-white shadow-[0_6px_20px_rgba(37,99,235,0.22)]' : 'border-l-4 border-transparent'; ?>">
+                        <svg class="w-5 h-5 mr-3 text-violet-400 group-hover:text-violet-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6M9 9h6M9 13h4m-7 8h12a2 2 0 002-2V5a2 2 0 00-2-2H6a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <span class="font-medium">Day To-Do Calendar</span>
+                    </a>
+                </li>
+                <?php endif; ?>
                 <li>
                     <a href="attendance_sheet.php" class="flex items-center px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800/70 rounded-lg transition-all group <?php echo basename($_SERVER['PHP_SELF']) == 'attendance_sheet.php' ? 'bg-blue-500/12 border-l-4 border-blue-400 text-white shadow-[0_6px_20px_rgba(37,99,235,0.22)]' : 'border-l-4 border-transparent'; ?>">
                         <svg class="w-5 h-5 mr-3 text-emerald-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2zM9 14l2 2 4-4"></path></svg>

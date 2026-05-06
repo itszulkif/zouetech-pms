@@ -55,9 +55,14 @@ $summarySql = "SELECT
         u.full_name,
         u.role,
         d.name AS department_name,
-        COUNT(l.id) AS present_days,
-        SUM(CASE WHEN l.sign_out_at IS NOT NULL THEN 1 ELSE 0 END) AS completed_days,
-        ROUND(SUM(TIMESTAMPDIFF(SECOND, l.sign_in_at, COALESCE(l.sign_out_at, NOW()))) / 3600, 2) AS total_hours
+        SUM(CASE WHEN l.id IS NOT NULL AND l.sign_out_method <> 'Automatic' THEN 1 ELSE 0 END) AS present_days,
+        SUM(CASE WHEN l.sign_out_at IS NOT NULL AND l.sign_out_method <> 'Automatic' THEN 1 ELSE 0 END) AS completed_days,
+        ROUND(SUM(
+            CASE
+                WHEN l.sign_out_method = 'Automatic' THEN 0
+                ELSE TIMESTAMPDIFF(SECOND, l.sign_in_at, COALESCE(l.sign_out_at, NOW()))
+            END
+        ) / 3600, 2) AS total_hours
     FROM users u
     LEFT JOIN departments d ON d.id = u.department_id
     LEFT JOIN attendance_sheet_logs l ON l.user_id = u.id
@@ -85,7 +90,13 @@ $detailSql = "SELECT
         l.sign_in_at,
         l.sign_out_at,
         l.sign_out_method,
-        ROUND(TIMESTAMPDIFF(SECOND, l.sign_in_at, COALESCE(l.sign_out_at, NOW())) / 3600, 2) AS hours,
+        ROUND(
+            CASE
+                WHEN l.sign_out_method = 'Automatic' THEN 0
+                ELSE TIMESTAMPDIFF(SECOND, l.sign_in_at, COALESCE(l.sign_out_at, NOW()))
+            END / 3600,
+            2
+        ) AS hours,
         l.activity_report
     FROM attendance_sheet_logs l
     JOIN users u ON u.id = l.user_id

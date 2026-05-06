@@ -96,10 +96,10 @@ endif; ?>
             <input type="hidden" name="project_type" value="Major">
             <?php if ($_SESSION['role'] === 'Super Admin'): ?>
             <div>
-                <label class="block text-xs font-mono text-cyan-400 mb-1">Team Members</label>
-                <p class="text-[11px] text-gray-500 mb-2">Select one or more team members. Choose at least one assignee across Team Members or Super Admins.</p>
+                <label class="block text-xs font-mono text-cyan-400 mb-1">Team Members / Team Leads</label>
+                <p class="text-[11px] text-gray-500 mb-2">Select one or more team assignees. Choose at least one assignee across Team Members, Team Leads, or Super Admins.</p>
                 <div id="majorProjectHeadList" class="max-h-44 overflow-y-auto rounded border border-gray-700 bg-gray-800 p-2 space-y-1.5">
-                    <div class="text-gray-500 text-xs font-mono py-2">Loading team members...</div>
+                    <div class="text-gray-500 text-xs font-mono py-2">Loading team assignees...</div>
                 </div>
             </div>
             <div>
@@ -153,7 +153,7 @@ endif; ?>
             <input type="hidden" name="id" id="editProjectId">
             <input type="hidden" name="project_type" value="Major">
             <div>
-                <label class="block text-xs font-mono text-cyan-400 mb-1">Team Members *</label>
+                <label class="block text-xs font-mono text-cyan-400 mb-1">Team Members / Team Leads *</label>
                 <div id="editMajorProjectMemberList" class="max-h-44 overflow-y-auto rounded border border-gray-700 bg-gray-800 p-2 space-y-1.5"></div>
             </div>
             <div>
@@ -215,7 +215,7 @@ endif; ?>
             .then(res => res.json())
             .then((users) => {
                 const safeUsers = Array.isArray(users) ? users : [];
-                allTeamMembers = safeUsers.filter(u => u.role === 'Team Member');
+                allTeamMembers = safeUsers.filter(u => u.role === 'Team Member' || u.role === 'Team Lead');
                 allSuperAdmins = safeUsers.filter(u => u.role === 'Super Admin');
                 renderDepartmentHeadOptions();
                 renderSuperAdminOptions();
@@ -223,7 +223,7 @@ endif; ?>
             .catch(() => {
                 const wrap = document.getElementById('majorProjectHeadList');
                 if (!wrap) return;
-                wrap.innerHTML = '<div class="text-red-400 text-xs font-mono py-2">Failed to load team members.</div>';
+                wrap.innerHTML = '<div class="text-red-400 text-xs font-mono py-2">Failed to load team assignees.</div>';
                 const saWrap = document.getElementById('majorProjectSuperAdminList');
                 if (saWrap) {
                     saWrap.innerHTML = '<div class="text-red-400 text-xs font-mono py-2">Failed to load Super Admins.</div>';
@@ -236,17 +236,20 @@ endif; ?>
         if (!wrap) return;
 
         if (!allTeamMembers.length) {
-            wrap.innerHTML = '<div class="text-gray-500 text-xs font-mono py-2">No team members found.</div>';
+            wrap.innerHTML = '<div class="text-gray-500 text-xs font-mono py-2">No team assignees found.</div>';
             return;
         }
         let html = '';
         allTeamMembers.forEach(h => {
+            const roleBadge = h.role === 'Team Lead'
+                ? '<span class="ml-1.5 text-[10px] text-indigo-300 uppercase">[Lead]</span>'
+                : '<span class="ml-1.5 text-[10px] text-cyan-300 uppercase">[Member]</span>';
             html += `<label class="flex items-start gap-2 py-1.5 px-2 rounded hover:bg-gray-700/40 cursor-pointer">
                     <input type="checkbox" name="member_ids[]" value="${h.id}" class="mt-0.5 w-4 h-4 accent-cyan-500">
-                    <span class="text-sm text-white"><span class="font-semibold">${h.full_name}</span></span>
+                    <span class="text-sm text-white"><span class="font-semibold">${h.full_name}</span>${roleBadge}</span>
                 </label>`;
         });
-        wrap.innerHTML = html || '<div class="text-gray-500 text-xs font-mono py-2">No team members found.</div>';
+        wrap.innerHTML = html || '<div class="text-gray-500 text-xs font-mono py-2">No team assignees found.</div>';
     }
 
     function renderSuperAdminOptions() {
@@ -443,7 +446,7 @@ endif; ?>
             const memberIds = formData.getAll('member_ids[]').map(Number).filter(v => Number.isInteger(v) && v > 0);
             const superAdminIds = formData.getAll('super_admin_ids[]').map(Number).filter(v => Number.isInteger(v) && v > 0);
             if (!memberIds.length && !superAdminIds.length) {
-                alert('Please select at least one assignee (Team Member or Super Admin) for this Major Project.');
+                alert('Please select at least one assignee (Team Member, Team Lead, or Super Admin) for this Major Project.');
                 return;
             }
             data.member_ids = memberIds;
@@ -472,14 +475,17 @@ endif; ?>
         const wrap = document.getElementById('editMajorProjectMemberList');
         if (!wrap) return;
         if (!allTeamMembers.length) {
-            wrap.innerHTML = '<div class="text-gray-500 text-xs font-mono py-2">No team members found.</div>';
+            wrap.innerHTML = '<div class="text-gray-500 text-xs font-mono py-2">No team assignees found.</div>';
             return;
         }
         const selectedSet = new Set(selectedIds.map(Number));
         wrap.innerHTML = allTeamMembers.map(member => `
             <label class="flex items-start gap-2 py-1.5 px-2 rounded hover:bg-gray-700/40 cursor-pointer">
                 <input type="checkbox" name="member_ids[]" value="${member.id}" class="mt-0.5 w-4 h-4 accent-cyan-500" ${selectedSet.has(Number(member.id)) ? 'checked' : ''}>
-                <span class="text-sm text-white"><span class="font-semibold">${member.full_name}</span></span>
+                <span class="text-sm text-white">
+                    <span class="font-semibold">${member.full_name}</span>
+                    <span class="ml-1.5 text-[10px] ${member.role === 'Team Lead' ? 'text-indigo-300' : 'text-cyan-300'} uppercase">[${member.role === 'Team Lead' ? 'Lead' : 'Member'}]</span>
+                </span>
             </label>
         `).join('');
     }
@@ -493,7 +499,11 @@ endif; ?>
         document.getElementById('editProjectStatus').value = p.status || 'Planned';
         document.getElementById('editProjectStart').value = p.start_date || '';
         document.getElementById('editProjectEnd').value = p.end_date || '';
-        renderEditMemberOptions([]);
+        const selectedIds = String(p.team_member_ids || '')
+            .split(',')
+            .map(v => Number(v))
+            .filter(v => Number.isInteger(v) && v > 0);
+        renderEditMemberOptions(selectedIds);
         openModal('modal-edit-project');
     }
 
@@ -502,7 +512,7 @@ endif; ?>
         const formData = new FormData(e.target);
         const memberIds = formData.getAll('member_ids[]').map(Number).filter(v => Number.isInteger(v) && v > 0);
         if (!memberIds.length) {
-            alert('Please select at least one team member for this Major Project.');
+            alert('Please select at least one team assignee (Team Member or Team Lead) for this Major Project.');
             return;
         }
         const data = Object.fromEntries(formData);

@@ -42,7 +42,13 @@ if ($role === 'Department Head' && (int)($user['department_id'] ?? 0) !== $dept_
 reconcile_attendance_auto_sign_out($db, $target_user_id);
 
 $sql = "SELECT attendance_date, sign_in_at, sign_out_at, sign_out_method, activity_report,
-    ROUND(TIMESTAMPDIFF(SECOND, sign_in_at, COALESCE(sign_out_at, NOW())) / 3600, 2) AS hours
+    ROUND(
+        CASE
+            WHEN sign_out_method = 'Automatic' THEN 0
+            ELSE TIMESTAMPDIFF(SECOND, sign_in_at, COALESCE(sign_out_at, NOW()))
+        END / 3600,
+        2
+    ) AS hours
     FROM attendance_sheet_logs
     WHERE user_id = ?";
 $types = "i";

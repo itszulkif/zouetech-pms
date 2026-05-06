@@ -292,9 +292,14 @@ $(document).ready(function () {
                 for (const [dept, members] of Object.entries(grouped)) {
                     html += '<div class="text-[10px] text-cyan-400 font-mono uppercase tracking-wider border-b border-gray-700/50 pb-1 mb-1">' + dept + '</div>';
                     members.forEach(m => {
+                        const roleTag = m.role === 'Team Lead'
+                            ? ' <span class="text-[10px] text-indigo-300">[Lead]</span>'
+                            : (m.role === 'Department Head'
+                                ? ' <span class="text-[10px] text-cyan-400">[Head]</span>'
+                                : '');
                         html += '<label class="flex items-center gap-2 py-1 cursor-pointer hover:bg-gray-800/50 rounded px-2 -mx-2">';
                         html += '<input type="checkbox" name="assigned_to[]" value="' + m.id + '" class="w-4 h-4 accent-cyan-500 flex-shrink-0">';
-                        html += '<span class="text-white truncate">' + m.full_name + (m.role === 'Department Head' ? ' <span class="text-[10px] text-cyan-400">[Head]</span>' : '') + '</span></label>';
+                        html += '<span class="text-white truncate">' + m.full_name + roleTag + '</span></label>';
                     });
                 }
                 container.html(html);
@@ -431,9 +436,12 @@ $(document).ready(function () {
                     html += '<div class="text-[10px] text-amber-400 font-mono uppercase tracking-wider border-b border-gray-700/50 pb-1 mb-1">' + dept + '</div>';
                     members.forEach(m => {
                         const checked = selectedIds.includes(Number(m.id)) ? 'checked' : '';
+                        const roleTag = m.role === 'Team Lead'
+                            ? ' <span class="text-[10px] text-indigo-300">[Lead]</span>'
+                            : '';
                         html += '<label class="flex items-center gap-2 py-1 cursor-pointer hover:bg-gray-800/50 rounded px-2 -mx-2">';
                         html += '<input type="checkbox" name="assigned_to[]" value="' + m.id + '" ' + checked + ' class="w-4 h-4 accent-amber-500 flex-shrink-0">';
-                        html += '<span class="text-white truncate">' + m.full_name + '</span></label>';
+                        html += '<span class="text-white truncate">' + m.full_name + roleTag + '</span></label>';
                     });
                 }
                 container.html(html);

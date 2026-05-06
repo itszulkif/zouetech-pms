@@ -53,7 +53,7 @@ if (empty($name)) {
 $major_assignee_ids = array_values(array_unique(array_merge($member_ids, $super_admin_ids)));
 
 if ($project_type === 'Major' && empty($major_assignee_ids)) {
-    echo json_encode(['success' => false, 'message' => 'At least one assignee (Team Member or Super Admin) must be assigned to every Major Project']);
+    echo json_encode(['success' => false, 'message' => 'At least one assignee (Team Member, Team Lead, or Super Admin) must be assigned to every Major Project']);
     exit;
 }
 
@@ -104,13 +104,13 @@ if ($project_type === 'Sub') {
     $stmt->close();
 }
 
-// Verify selected team members exist
+// Verify selected team assignees (Team Members + Team Leads) exist.
 foreach ($member_ids as $member_id) {
-    $stmt = $db->prepare("SELECT id FROM users WHERE id = ? AND role = 'Team Member'");
+    $stmt = $db->prepare("SELECT id FROM users WHERE id = ? AND role IN ('Team Member', 'Team Lead')");
     $stmt->bind_param("i", $member_id);
     $stmt->execute();
     if ($stmt->get_result()->num_rows === 0) {
-        echo json_encode(['success' => false, 'message' => "Team Member ID $member_id does not exist"]);
+        echo json_encode(['success' => false, 'message' => "Team assignee ID $member_id does not exist"]);
         exit;
     }
     $stmt->close();

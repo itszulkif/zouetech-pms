@@ -267,6 +267,7 @@ $canViewReports = ($isGlobalAttendanceViewer || $isDeptHead);
     function statusBadge(status) {
         if (status === 'Signed Out') return 'text-green-400 bg-green-500/10 border-green-500/30';
         if (status === 'Signed In') return 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+        if (status === 'Absent') return 'text-red-300 bg-red-500/10 border-red-500/30';
         if (status === 'Future Date') return 'text-sky-300 bg-sky-500/10 border-sky-500/30';
         return 'text-gray-400 bg-gray-700/40 border-gray-600';
     }
@@ -343,7 +344,7 @@ $canViewReports = ($isGlobalAttendanceViewer || $isDeptHead);
                 const self = res.self;
                 if (self) {
                     const selfAutoNote = (self.sign_out_method === 'Automatic')
-                        ? ' (auto-closed at 11:30 PM due to inactivity)'
+                        ? ' (auto sign-out at 11:00 PM, counted as Absent)'
                         : '';
                     myAttendanceStatus.textContent = `${self.attendance_status}${selfAutoNote}`;
                 } else {
@@ -473,7 +474,7 @@ $canViewReports = ($isGlobalAttendanceViewer || $isDeptHead);
                         <td class="px-2 py-2 font-mono">${fmt(x.sign_out_at)}</td>
                         <td class="px-2 py-2">
                             ${(x.sign_out_method === 'Automatic')
-                                ? '<span class="px-2 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[10px] font-mono">System-Auto</span>'
+                                ? '<span class="px-2 py-0.5 rounded border border-red-500/40 bg-red-500/10 text-red-300 text-[10px] font-mono">System-Auto (Absent)</span>'
                                 : '<span class="px-2 py-0.5 rounded border border-green-500/40 bg-green-500/10 text-green-300 text-[10px] font-mono">Manual</span>'
                             }
                         </td>
@@ -481,7 +482,7 @@ $canViewReports = ($isGlobalAttendanceViewer || $isDeptHead);
                         <td class="px-2 py-2">
                             ${(x.activity_report ? x.activity_report : '<span class="text-gray-500">No report</span>')}
                             ${(x.sign_out_method === 'Automatic')
-                                ? '<div class="text-[10px] text-amber-300 font-mono mt-1">System note: session auto-closed at 11:30 PM due to inactivity.</div>'
+                                ? '<div class="text-[10px] text-red-300 font-mono mt-1">System note: auto sign-out at 11:00 PM due to missed manual sign-out. Attendance treated as Absent and hours are not counted.</div>'
                                 : ''
                             }
                         </td>

@@ -43,12 +43,28 @@ if ($id <= 0 || empty($name)) {
     exit;
 }
 if ($project_type === 'Major' && empty($member_ids)) {
-    echo json_encode(['success' => false, 'message' => 'Major projects require at least one team member']);
+    echo json_encode(['success' => false, 'message' => 'Major projects require at least one team assignee (Team Member or Team Lead)']);
     exit;
 }
 
 $database = new Database();
 $db = $database->connect();
+
+if ($project_type === 'Major') {
+    foreach ($member_ids as $member_id) {
+        $member_id = (int)$member_id;
+        $memberStmt = $db->prepare("SELECT id FROM users WHERE id = ? AND role IN ('Team Member', 'Team Lead')");
+        $memberStmt->bind_param("i", $member_id);
+        $memberStmt->execute();
+        if ($memberStmt->get_result()->num_rows === 0) {
+            $memberStmt->close();
+            echo json_encode(['success' => false, 'message' => "Team assignee ID $member_id does not exist"]);
+            $db->close();
+            exit;
+        }
+        $memberStmt->close();
+    }
+}
 
 // Update main project row
 $sql = "UPDATE projects SET 

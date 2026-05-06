@@ -112,7 +112,7 @@ if ($project_id === 0) {
         $visibility
         $exclusions
         GROUP BY t.id
-        ORDER BY t.start_date ASC, t.id DESC
+        ORDER BY t.created_at DESC, t.id DESC
     ";
 
     $result = $db->query($query);
@@ -212,7 +212,7 @@ else {
         $extra_join
         WHERE t.project_id $project_filter
         $extra_where
-        ORDER BY t.due_date ASC, t.id DESC
+        ORDER BY t.created_at DESC, t.id DESC
     ";
 
     // ── AUTO-MISS SWEEP: Mark overdue tasks as Missed ────────────────────────

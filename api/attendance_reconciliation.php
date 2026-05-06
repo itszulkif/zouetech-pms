@@ -41,16 +41,13 @@ function ensure_attendance_sheet_schema(mysqli $db): void
 function reconcile_attendance_auto_sign_out(mysqli $db, ?int $userId = null): int
 {
     $today = date('Y-m-d');
-    $cutoffReached = (date('H:i:s') >= '23:30:00') ? 1 : 0;
-    $autoNote = 'Session auto-closed by system at 11:30 PM due to missed sign-out.';
+    $cutoffReached = (date('H:i:s') >= '23:00:00') ? 1 : 0;
+    $autoNote = 'Auto sign-out at 11:00 PM: missed manual sign-out, attendance marked Absent.';
 
     $sql = "UPDATE attendance_sheet_logs
-        SET sign_out_at = CONCAT(attendance_date, ' 23:30:00'),
+        SET sign_out_at = sign_in_at,
             sign_out_method = 'Automatic',
-            activity_report = CASE
-                WHEN activity_report IS NULL OR TRIM(activity_report) = '' THEN ?
-                ELSE activity_report
-            END
+            activity_report = ?
         WHERE sign_in_at IS NOT NULL
           AND sign_out_at IS NULL
           AND (

@@ -41,7 +41,19 @@ if ($role === 'Department Head' && (int)($user['department_id'] ?? 0) !== $dept_
 
 $rows = [];
 $sql = "SELECT attendance_date, sign_in_at, sign_out_at, sign_out_method, activity_report,
-    ROUND(TIMESTAMPDIFF(SECOND, sign_in_at, COALESCE(sign_out_at, NOW())) / 3600, 2) AS hours
+    CASE
+        WHEN sign_out_method = 'Automatic' THEN 'Absent'
+        WHEN sign_in_at IS NULL THEN 'Not Signed In'
+        WHEN sign_out_at IS NULL THEN 'Signed In'
+        ELSE 'Signed Out'
+    END AS attendance_status,
+    ROUND(
+        CASE
+            WHEN sign_out_method = 'Automatic' THEN 0
+            ELSE TIMESTAMPDIFF(SECOND, sign_in_at, COALESCE(sign_out_at, NOW()))
+        END / 3600,
+        2
+    ) AS hours
     FROM attendance_sheet_logs
     WHERE user_id = ?";
 $types = "i";

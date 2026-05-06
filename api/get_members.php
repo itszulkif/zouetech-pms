@@ -15,7 +15,7 @@ if ($for_mentions) {
     $res = $db->query("SELECT u.id, u.full_name, u.role, d.name as department_name
         FROM users u
         LEFT JOIN departments d ON u.department_id = d.id
-        WHERE u.role IN ('Super Admin', 'Team Member')
+        WHERE u.role IN ('Super Admin', 'Team Member', 'Team Lead')
         ORDER BY u.role ASC, d.name ASC, u.full_name ASC");
     $members = [];
     if ($res) {
@@ -69,11 +69,11 @@ if ($project_id === 0) {
     else {
         // Assign Dropdown: Show all possible assignees based on role
         if ($is_super) {
-            // Super Admins can assign direct tasks to team members and other super admins.
+            // Super Admins can assign direct tasks to team members, team leads, and super admins.
             $query = "SELECT u.id, u.full_name, u.role, d.name as department_name 
                       FROM users u 
                       LEFT JOIN departments d ON u.department_id = d.id 
-                      WHERE u.role IN ('Team Member', 'Super Admin')
+                      WHERE u.role IN ('Team Member', 'Team Lead', 'Super Admin')
                       ORDER BY d.name ASC, u.full_name ASC";
             $stmt = $db->prepare($query);
             $stmt->execute();
@@ -84,11 +84,11 @@ if ($project_id === 0) {
             $stmt->close();
         }
         else {
-            // Team Members can only assign to Team Members
+            // Team Members can assign to Team Members and Team Leads.
             $query = "SELECT u.id, u.full_name, u.role, u.department_id, d.name as department_name 
                       FROM users u 
                       LEFT JOIN departments d ON u.department_id = d.id 
-                      WHERE u.role IN ('Team Member')
+                      WHERE u.role IN ('Team Member', 'Team Lead')
                       ORDER BY d.name ASC, u.full_name ASC";
             $stmt = $db->prepare($query);
             $stmt->execute();
